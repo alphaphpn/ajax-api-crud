@@ -1,0 +1,123 @@
+<!-- By: Ludwig Bethnicer C. Napigkit -->
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>AJAX CRUD: Edit</title>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+	<script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+	<script src="script.js"></script>
+</head>
+<body>
+	<div class="container-fluid p-1 bg-primary text-white text-center sticky-top">
+		<h1>AJAX CRUD</h1>
+		<p>Resize this responsive page to see the effect!</p>
+	</div>
+
+	<hr class="container">
+
+	<div class="container">
+		<div class="card">
+			<form id="frmUpdate" action="update.php" method="POST" class="needs-validation" novalidate>
+				<input type="number" name="id" id="id" class="d-none">
+				<div id="recordid" class="card-header"></div>
+				<div class="card-body">
+					<div class="form-group">
+						<div class="row">
+							<div class="col">
+								<input type="text" class="form-control" placeholder="Product Name" name="pname" id="pname" required>
+							</div>
+							<div class="col">
+								<input type="text" class="form-control" placeholder="Unit" name="punit" id="punit" required>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="row">
+							<div class="col">
+								<input type="number" class="form-control" placeholder="Price" name="pprice" id="pprice" value="0.00" min="0.01" step=".01" required>
+							</div>
+							<div class="col">
+								<input type="date" class="form-control" placeholder="Expiry Date" name="pdateex" id="pdateex" required>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="row">
+							<div class="col">
+								<input type="number" class="form-control" placeholder="Stock" name="pstock" id="pstock" value="0.00" min="0.01" step=".01" required>
+							</div>
+							<div class="col">
+								
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card-footer text-right">
+					<button type="submit" class="btn btn-primary">Update</button>
+					<a href="" class="btn btn-success">Refresh</a>
+					<a id="cancel-back" href="./" class="btn btn-secondary">Cancel</a>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script>
+		// Get URL Parameter - Start
+		$.urlParam = function(name) {
+			var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+			if (results==null) {
+				return null;
+			}
+			return decodeURI(results[1]) || 0;
+		}
+		// Get URL Parameter - End
+
+		var id = $.urlParam('id');
+		
+		$('#recordid').html('Record ID#: ['+id+']');
+
+		$.ajax({ 
+			type: 'GET', 
+			url: 'single-read.php?id='+id, 
+			data: { get_param: 'value' }, 
+			dataType: 'json',
+			success: function (data) {
+				$.each(data, function() {
+					$('#id').val(data.id);
+					$('#pname').val(data.product_name);
+					$('#punit').val(data.product_unit);
+					$('#pprice').val(data.product_price);
+					$('#pdateex').val(data.product_date_of_expiry);
+					$('#pstock').val(data.product_available_inventory);
+					$('#scost').val(data.product_available_inventory_cost);
+				});
+			}
+		});
+
+		$("#frmUpdate").submit(function(e) {
+			e.preventDefault(); // avoid to execute the actual submit of the form.
+
+			var form = $(this);
+			var actionUrl = form.attr('action');
+
+			$.ajax({
+				type: "POST",
+				url: actionUrl+'?'+form.serialize()
+			});
+
+			$('#cancel-back').removeClass('btn-secondary');
+			$('#cancel-back').addClass('btn-danger');
+			$('#cancel-back').html('Back');
+		});
+	</script>
+</body>
+</html>
