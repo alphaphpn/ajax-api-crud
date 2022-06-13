@@ -16,5 +16,3 @@
 		});
 	}, false);
 })();
-
-/** By Ludwig Bethnicer C. Napigkit **/
